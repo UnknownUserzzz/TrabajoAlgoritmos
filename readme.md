@@ -1,7 +1,7 @@
 # Proyecto Allinbus - Gestión de Pasajes
 
 ## Descripción
-Este proyecto consiste en una aplicación en C++ para la gestión de pasajes en la empresa Allinbus. Se implementaron estructuras de datos como listas enlazadas, clases de usuarios, ordenamiento por el método burbuja y se diseñó un menú interactivo en consola para gestionar las diferentes funcionalidades.
+Este proyecto consiste en una aplicación en C++ para la gestión de pasajes en una empresa ficticia. Se implementaron estructuras de datos como listas enlazadas, clases de usuarios, ordenamiento por el método burbuja y se diseñó un menú interactivo en consola para gestionar las diferentes funcionalidades.
 
 ### Integrantes del equipo:
 - Juan Carlos Angulo
