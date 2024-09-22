@@ -1,8 +1,9 @@
 #pragma once
 #include <iostream>
 #include <sstream>
+#include"Menu.h"
 using namespace std;
-
+//hola
 class Bus {
 private:
     int busNumber;
@@ -11,6 +12,7 @@ private:
     string schedule;
     string StartRoute;
     string EndRoute;
+    Menu* menu;
 
 public:
     Bus(int busNumber=0, string Company="", int price =0, string schedule="") {
@@ -20,6 +22,7 @@ public:
         this->schedule = schedule;
         StartRoute = "";
         EndRoute = "";
+        menu = new Menu();
     }
 
     // Getters y Setters
@@ -38,22 +41,39 @@ public:
     void SetEndRoute(string EndRoute) { this->EndRoute = EndRoute; }
 
     // Mostrar información del autobús
-    string ToString() {
-        ostringstream print;
-        print << "\nEmpresa: " << Company << endl;
-        print << "Numero de bus: " << busNumber << endl;
-        print << "Precio: " << price << endl;
-        print << "Horario: " << schedule << endl;
-        return print.str();
+    void ToString() {
+        menu->Fondo();
+        menu->Logo();
+        Console::ForegroundColor = ConsoleColor::White;
+        Console::SetCursorPosition(42, 12);
+        cout << "Empresa: " << Company;
+        Console::SetCursorPosition(42, 14);
+        cout << "Numero de bus: " << busNumber;
+        Console::SetCursorPosition(42, 16);
+        cout << "Precio: " << price;
+        Console::SetCursorPosition(42, 18);
+        cout << "Horario: " << schedule;
+        Console::SetCursorPosition(42, 24);
+        Console::ForegroundColor = ConsoleColor::Red;
+        cout << "PRESIONA ENTER PARA SEGUIR BUSCANDO....";
+        Console::SetCursorPosition(42, 26);
+        cout << "PRESIONA ESC PARA ELEGIR EL BOLETO DE BUS...";
     }
 
-    string ToStringData() {
-        ostringstream print;
-        print << "\nRuta: " << StartRoute << " - " << EndRoute << endl;
-        print << "Empresa: " << Company << endl;
-        print << "Numero de bus: " << busNumber << endl;
-        print << "Precio: " << price << endl;
-        print << "Horario: " << schedule << endl;
-        return print.str();
+    void ToStringData() {
+        menu->Fondo();
+        menu->Logo();
+        Console::ForegroundColor = ConsoleColor::White;
+        Console::SetCursorPosition(42, 12);
+        cout << "Ruta: " << StartRoute << " - " << EndRoute;
+        Console::SetCursorPosition(42, 14);
+        cout << "Empresa: " << Company;
+        Console::SetCursorPosition(42, 16);
+        cout << "Numero de bus: " << busNumber;
+        Console::SetCursorPosition(42, 18);
+        cout << "Precio: " << price;
+        Console::SetCursorPosition(42, 20);
+        cout << "Horario: " << schedule;
+       
     }
 };

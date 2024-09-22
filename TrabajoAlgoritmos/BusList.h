@@ -5,10 +5,12 @@ template <typename T>
 class BusList {
 private:
     Node<T>* head;
-
+    bool escogio;
+    char tecla;
 public:
     BusList() {
         head = nullptr;
+        escogio = false;
     }
     ~BusList() {
         Node<T>* temp =head;
@@ -51,12 +53,16 @@ public:
     }
 
     // Método para mostrar todos los autobuses en la lista
-    void displayBuses() {
+    T* displayBuses() {
         Node<T>* temp = head;
-        while (temp != nullptr) {
-            cout<<temp->data.ToString();
+        while (!escogio) {
+            if (temp == nullptr) { temp = head; }
+            temp->data.ToString();
             temp = temp->next;
+            tecla=_getch();
+            if (tecla == 27) { escogio = true; }
         }
+        return &temp->data;
     }
 
     // Método para buscar un autobús por número

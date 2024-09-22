@@ -89,7 +89,7 @@ private:
             file.close();
         }
         else {
-            cout << "No se encontro el txt, se iniciara una nueva base de datos" << endl;
+            cout << "";
         }
     }
 

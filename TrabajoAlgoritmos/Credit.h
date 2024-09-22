@@ -35,8 +35,7 @@ public:
     void ToString() {
         menu->Fondo();
         menu->Logo();
-        Console::BackgroundColor = ConsoleColor(7);
-        Console::ForegroundColor = ConsoleColor(0);
+        Console::ForegroundColor = ConsoleColor::White;
         Console::SetCursorPosition(42, 14);
         cout << "            Datos de la tarjeta";
         Console::SetCursorPosition(42, 15);
