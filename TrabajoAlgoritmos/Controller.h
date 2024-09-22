@@ -276,6 +276,7 @@ public:
             bus.SetStartRoute(startRoute);
             bus.SetEndRoute(endRoute);
             buses.addBus(bus);
+            buses.sort();
         }
     }
 

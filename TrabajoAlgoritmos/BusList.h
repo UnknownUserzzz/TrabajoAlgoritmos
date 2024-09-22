@@ -1,6 +1,7 @@
 #pragma once
 #include "Node.h"
 #include "Bus.h"
+#include "BubbleSort.h"
 template <typename T>
 class BusList {
 private:
@@ -99,4 +100,29 @@ public:
             delete toDelete;
         }
     }
+
+
+    void sort() {
+        if (!head || !head->next) return; // No necesita ordenación si está vacío o tiene un solo nodo
+
+        bool swapped;
+        Node<T>* ptr1;
+        Node<T>* lptr = nullptr;
+
+        do {
+            swapped = false;
+            ptr1 = head;
+
+            while (ptr1->next != lptr) {
+                // Comparar dos nodos de tipo T
+                if (!(ptr1->data < ptr1->next->data)) {
+                    std::swap(ptr1->data, ptr1->next->data); // Intercambiar los datos si están en el orden incorrecto
+                    swapped = true;
+                }
+                ptr1 = ptr1->next;
+            }
+            lptr = ptr1; // El último nodo ya está en su posición correcta
+        } while (swapped);
+    }
+
 };

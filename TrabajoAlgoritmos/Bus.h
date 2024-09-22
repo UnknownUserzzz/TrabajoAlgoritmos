@@ -24,6 +24,10 @@ public:
         EndRoute = "";
         menu = new Menu();
     }
+    //Para comparar y ordenar los autobuses
+    bool operator<(const Bus& other) const {
+        return this->price < other.price; // Comparación basada en el número de autobús
+    }
 
     // Getters y Setters
     int GetBusNumber() { return busNumber; }
