@@ -12,453 +12,451 @@
 #define IZQUIERDA 75
 class Controller {
 private:
-    ClientDatabase<int>* database;
-    Menu* menu;
-    int option;
-    int _option;
-    char tecla;
+	ClientDatabase<int>* database;
+	Menu* menu;
+	int option;
+	int _option;
+	char tecla;
 public:
-    Controller() {
-        database = new ClientDatabase<int>();
-        menu = new Menu();
-        option = 1;
-        _option = 1;
-    }
-    void MainMenu() {
-        bool refresh = true;
-        menu->Fondo();  // Llama a Fondo solo una vez
-        menu->Logo();   // Llama a Logo solo una vez
-        menu->Welcome();
+	Controller() {
+		database = new ClientDatabase<int>();
+		menu = new Menu();
+		option = 1;
+		_option = 1;
+	}
+	void MainMenu() {
+		bool refresh = true;
+		menu->Fondo();  // Llama a Fondo solo una vez
+		menu->Logo();   // Llama a Logo solo una vez
+		menu->Welcome();
 
-        do {
-            if (refresh) {  // Solo redibuja las opciones si es necesario
-             
-                Console::ForegroundColor = ConsoleColor::White;
-                Console::CursorVisible = false;
+		do {
+			if (refresh) {  // Solo redibuja las opciones si es necesario
 
-                // Actualiza las opciones del menú
-                Console::SetCursorPosition(50, 14);  // Ajusta la posición en lugar de mover constantemente
-                cout << (option == 1 ? "   > REGISTRARSE <   " : "     REGISTRARSE     ");
-                Console::SetCursorPosition(50, 16);
-                cout << (option == 2 ? "  > INICIAR SESION < " : "    INICIAR SESION   ");
-                Console::SetCursorPosition(50, 18);
-                cout << (option == 3 ? "      > SALIR <       " : "        SALIR        ");
-            }
+				Console::ForegroundColor = ConsoleColor::White;
+				Console::CursorVisible = false;
 
-            tecla = _getch();  // Solo cambiar la opción si es necesario
-            switch (tecla) {
-            case ARRIBA:
-                option--;
-                if (option < 1) option = 3;
-                refresh = true;  // Cambiar el valor para refrescar solo si cambia la opción
-                break;
-            case ABAJO:
-                option++;
-                if (option > 3) option = 1;
-                refresh = true;
-                break;
-            default:
-                refresh = false;  // No refrescar si no hubo cambio
-                break;
-            }
-        } while (tecla != 13);
+				// Actualiza las opciones del menú
+				Console::SetCursorPosition(50, 14);  // Ajusta la posición en lugar de mover constantemente
+				cout << (option == 1 ? "   > REGISTRARSE <   " : "     REGISTRARSE     ");
+				Console::SetCursorPosition(50, 16);
+				cout << (option == 2 ? "  > INICIAR SESION < " : "    INICIAR SESION   ");
+				Console::SetCursorPosition(50, 18);
+				cout << (option == 3 ? "      > SALIR <       " : "        SALIR        ");
+			}
 
-        // Manejo de selección
-        switch (option) {
-        case 1:
-            RegisterClient();
-            MainMenu();
-            break;
-        case 2:
-            LoginClient();
-            MainMenu();
-            break;
-        case 3:
-            exit(0);
-        }
-    }
+			tecla = _getch();  // Solo cambiar la opción si es necesario
+			switch (tecla) {
+			case ARRIBA:
+				option--;
+				if (option < 1) option = 3;
+				refresh = true;  // Cambiar el valor para refrescar solo si cambia la opción
+				break;
+			case ABAJO:
+				option++;
+				if (option > 3) option = 1;
+				refresh = true;
+				break;
+			default:
+				refresh = false;  // No refrescar si no hubo cambio
+				break;
+			}
+		} while (tecla != 13);
 
-    void ClientMenu(Client<int>* client) {
-        bool refresh = true;
-        menu->Fondo();
-        menu->Logo();
+		// Manejo de selección
+		switch (option) {
+		case 1:
+			RegisterClient();
+			MainMenu();
+			break;
+		case 2:
+			LoginClient();
+			MainMenu();
+			break;
+		case 3:
+			exit(0);
+		}
+	}
 
-        do {
-            if (refresh) {
-                Console::ForegroundColor = ConsoleColor::White;
+	void ClientMenu(Client<int>* client) {
+		bool refresh = true;
+		menu->Fondo();
+		menu->Logo();
 
-                // Redibuja solo las opciones del menú de cliente
-                Console::SetCursorPosition(42, 12);
-                cout << (_option == 1 ? "> Mostrar datos del usuario <" : "  Mostrar datos del usuario  ");
-                Console::SetCursorPosition(42, 14);
-                cout << (_option == 2 ? "> Comprar Boletos <" : "  Comprar Boletos  ");
-                Console::SetCursorPosition(42, 16);
-                cout << (_option == 3 ? "> Mostrar boletos comprados <" : "  Mostrar boletos comprados  ");
-                Console::SetCursorPosition(42, 18);
-                cout << (_option == 4 ? "> Mostrar saldo <" : "  Mostrar saldo  ");
-                Console::SetCursorPosition(42, 20);
-                cout << (_option == 5 ? "> Recargar saldo <" : "  Recargar saldo  ");
-                Console::SetCursorPosition(42, 22);
-                cout << (_option == 6 ? "> Salir <" : "  Salir  ");
-            }
+		do {
+			if (refresh) {
+				Console::ForegroundColor = ConsoleColor::White;
 
-            tecla = _getch();
-            switch (tecla) {
-            case ARRIBA:
-                _option--;
-                if (_option < 1) _option = 6;
-                refresh = true;
-                break;
-            case ABAJO:
-                _option++;
-                if (_option > 6) _option = 1;
-                refresh = true;
-                break;
-            default:
-                refresh = false;
-                break;
-            }
-        } while (tecla != 13);
+				// Redibuja solo las opciones del menú de cliente
+				Console::SetCursorPosition(42, 12);
+				cout << (_option == 1 ? "> Mostrar datos del usuario <" : "  Mostrar datos del usuario  ");
+				Console::SetCursorPosition(42, 14);
+				cout << (_option == 2 ? "> Comprar Boletos <" : "  Comprar Boletos  ");
+				Console::SetCursorPosition(42, 16);
+				cout << (_option == 3 ? "> Mostrar boletos comprados <" : "  Mostrar boletos comprados  ");
+				Console::SetCursorPosition(42, 18);
+				cout << (_option == 4 ? "> Mostrar saldo <" : "  Mostrar saldo  ");
+				Console::SetCursorPosition(42, 20);
+				cout << (_option == 5 ? "> Recargar saldo <" : "  Recargar saldo  ");
+				Console::SetCursorPosition(42, 22);
+				cout << (_option == 6 ? "> Salir <" : "  Salir  ");
+			}
 
-        // Ejecutar la opción seleccionada
-        switch (_option) {
-        case 1:
-            client->ToString();
-            _getch();
-            ClientMenu(client);
-            break;
-        case 2:
-            BuyTicket(client);
-            _getch();
-            ClientMenu(client);
-            break;
-        case 3:
-            ShowBoughtTickets(client);
-            ClientMenu(client);
-            break;
-        case 4:
-            ShowBalance(client);
-            _getch();
-            ClientMenu(client);
-            break;
-        case 5:
-            RechargeBalance(client);
-            _getch();
-            ClientMenu(client);
-            break;
-        case 6:
-            return;
-        }
-    }
+			tecla = _getch();
+			switch (tecla) {
+			case ARRIBA:
+				_option--;
+				if (_option < 1) _option = 6;
+				refresh = true;
+				break;
+			case ABAJO:
+				_option++;
+				if (_option > 6) _option = 1;
+				refresh = true;
+				break;
+			default:
+				refresh = false;
+				break;
+			}
+		} while (tecla != 13);
 
-
-    void RegisterClient() {
-        string name, lastname, user, password;
-        int dni, age, phone;
-        menu->Fondo();
-        menu->Logo();
-       
-        Console::ForegroundColor = ConsoleColor::White;
-        Console::SetCursorPosition(42, 12);
-        cout << "Ingrese nombre: ";
-        cin >> name;
-        Console::SetCursorPosition(42, 14);
-        cout << "Ingrese apellido: ";
-        cin >> lastname;
-        Console::SetCursorPosition(42, 16);
-        cout << "Ingrese DNI: ";     
-        cin >> dni;
-        Console::SetCursorPosition(42, 18);
-        cout << "Ingrese edad: ";
-      
-        cin >> age;
-        Console::SetCursorPosition(42, 20);
-        cout << "Ingrese telefono: ";
-        cin >> phone;
-        Console::SetCursorPosition(42,22);
-        cout << "Ingrese usuario: ";
-        cin >> user;
-        Console::SetCursorPosition(42,24);
-        cout << "Ingrese password: ";
-
-        cin >> password;
-
-        // Registra al cliente con todos los datos inicializados correctamente
-        database->registerClient(name, lastname, dni, age, phone, user, password);
-    }
+		// Ejecutar la opción seleccionada
+		switch (_option) {
+		case 1:
+			client->ToString();
+			_getch();
+			ClientMenu(client);
+			break;
+		case 2:
+			BuyTicket(client);
+			_getch();
+			ClientMenu(client);
+			break;
+		case 3:
+			ShowBoughtTickets(client);
+			ClientMenu(client);
+			break;
+		case 4:
+			ShowBalance(client);
+			_getch();
+			ClientMenu(client);
+			break;
+		case 5:
+			RechargeBalance(client);
+			_getch();
+			ClientMenu(client);
+			break;
+		case 6:
+			return;
+		}
+	}
 
 
-    void LoginClient() {
-        menu->Fondo();
-        menu->Logo();
-        string user, password;
-        Console::ForegroundColor = ConsoleColor::White;
-        Console::SetCursorPosition(42, 12);
-        cout << "Ingrese usuario: ";
-        cin >> user;
-        Console::SetCursorPosition(42, 14);
-        cout << "Ingrese password: ";
-        cin >> password;
+	void RegisterClient() {
+		string name, lastname, user, password;
+		int dni, age, phone;
+		menu->Fondo();
+		menu->Logo();
 
-        Client<int>* client = database->findClient(user, password);
-        if (client) {
-            ClientMenu(client);
-        }
-        else {
-            Console::SetCursorPosition(42, 16);
-            cout << "Usuario no encontrado";
-            _getch();
-        }
-    }
+		Console::ForegroundColor = ConsoleColor::White;
+		Console::SetCursorPosition(42, 12);
+		cout << "Ingrese nombre: ";
+		cin >> name;
+		Console::SetCursorPosition(42, 14);
+		cout << "Ingrese apellido: ";
+		cin >> lastname;
+		Console::SetCursorPosition(42, 16);
+		cout << "Ingrese DNI: ";
+		cin >> dni;
+		Console::SetCursorPosition(42, 18);
+		cout << "Ingrese edad: ";
 
-   
+		cin >> age;
+		Console::SetCursorPosition(42, 20);
+		cout << "Ingrese telefono: ";
+		cin >> phone;
+		Console::SetCursorPosition(42, 22);
+		cout << "Ingrese usuario: ";
+		cin >> user;
+		Console::SetCursorPosition(42, 24);
+		cout << "Ingrese password: ";
 
+		cin >> password;
 
-    void BuyTicket(Client<int>* client) {
-        string startRoute, endRoute;
-        menu->Fondo();
-        menu->Logo();
-        Console::ForegroundColor = ConsoleColor::White;
-        Console::SetCursorPosition(42, 12);
-        cout << "Ingrese la ruta inicial: ";
-        cin >> startRoute;
-        Console::SetCursorPosition(42, 14);
-        cout << "Ingrese la ruta final: ";
-        cin >> endRoute;
-
-        BusList<Bus> buses;
-
-        GenerateRandomBuses(buses, startRoute, endRoute);
-
-        Bus* b = buses.displayBuses();  // Cambiar a Bus*
-        menu->Fondo();
-        menu->Logo();
-        Console::ForegroundColor = ConsoleColor::White;
-        if (b != nullptr) {
-            int busNumber = b->GetBusNumber();
-
-            Bus* bus = buses.searchBus(busNumber);
-            if (bus) {
-                if (client->GetBalance() >= bus->GetPrice()) {
-                    client->SetBalance(client->GetBalance() - bus->GetPrice());
-                    client->AddBusData(bus->GetBusNumber(), bus->GetCompany(), bus->GetPrice(), bus->GetSchedule());
-                    client->AddBusRoute(bus->GetBusNumber(), startRoute, endRoute);
-                    database->saveClientsToFile();
-                    Console::SetCursorPosition(42, 22);
-                    cout << "Boleto comprado con exito.\n";
-                }
-                else {
-                    Console::SetCursorPosition(42, 22);
-                    cout << "Saldo insuficiente.\n";
-                }
-            }
-            else {
-                Console::SetCursorPosition(42, 22);
-                cout << "Bus no encontrado.\n";
-            }
-        }
-        else {
-            Console::SetCursorPosition(42, 22);
-            cout << "No se mostraron buses disponibles.\n";
-        }
-    }
+		// Registra al cliente con todos los datos inicializados correctamente
+		database->registerClient(name, lastname, dni, age, phone, user, password);
+	}
 
 
-    void GenerateRandomBuses(BusList<Bus>& buses, string startRoute, string endRoute) {
-        srand(time(0));
-        int numBuses = rand() % 7 + 10;  // Genera entre 4 y 6 buses
-        for (int i = 0; i < numBuses; i++) {
-            int busNumber = rand() % 100 + 1;
-            string company = GenerateRandomCompany();
-            int price = rand() % 31 + 30;  // Precio entre 30 y 60
-            string schedule = to_string(rand() % 24) + ":00";
-            Bus bus(busNumber, company, price, schedule);
-            bus.SetStartRoute(startRoute);
-            bus.SetEndRoute(endRoute);
-            buses.addBus(bus);
-            buses.sort();
-        }
-    }
+	void LoginClient() {
+		menu->Fondo();
+		menu->Logo();
+		string user, password;
+		Console::ForegroundColor = ConsoleColor::White;
+		Console::SetCursorPosition(42, 12);
+		cout << "Ingrese usuario: ";
+		cin >> user;
+		Console::SetCursorPosition(42, 14);
+		cout << "Ingrese password: ";
+		cin >> password;
 
-    string GenerateRandomCompany() {
-        ifstream file("Empresas.txt");
-        vector<string> companies;
-        string company;
-        while (getline(file, company)) {
-            companies.push_back(company);
-        }
-        file.close();
-        return companies[rand() % companies.size()];
-    }
+		Client<int>* client = database->findClient(user, password);
+		if (client) {
+			ClientMenu(client);
+		}
+		else {
+			Console::SetCursorPosition(42, 16);
+			cout << "Usuario no encontrado";
+			_getch();
+		}
+	}
 
-    void ShowBoughtTickets(Client<int>* client) {
-        if (client->busdata.empty()) {
-            menu->Fondo();  // Llama a Fondo solo una vez
-            menu->Logo();   // Llama a Logo solo una vez
-            Console::ForegroundColor = ConsoleColor::White;
-            Console::SetCursorPosition(42, 12);
-            cout << "No han comprado boletos";
-            _getch();
-        }
-        else {
-            for (Bus* bus : client->busdata) {
-                bus->ToStringData();
-                _getch();
 
-            }
-        }
-    }
 
-    void ShowBalance(Client<int>* client) {
-        menu->Fondo();  // Llama a Fondo solo una vez
-        menu->Logo();   // Llama a Logo solo una vez
-        Console::ForegroundColor = ConsoleColor::White;
-        Console::SetCursorPosition(42, 12);
-        cout << "Su saldo actual es: " << client->GetBalance() << " soles.\n";
-    }
-    void RechargeBalance(Client<int>* client) {
-        int option = 1;
-        char tecla;
-        bool refresh = true;
 
-        // Mostrar fondo y logo una sola vez
-        menu->Fondo();
-        menu->Logo();
+	void BuyTicket(Client<int>* client) {
+		string startRoute, endRoute;
+		menu->Fondo();
+		menu->Logo();
+		Console::ForegroundColor = ConsoleColor::White;
+		Console::SetCursorPosition(42, 12);
+		cout << "Ingrese la ruta inicial: ";
+		cin >> startRoute;
+		Console::SetCursorPosition(42, 14);
+		cout << "Ingrese la ruta final: ";
+		cin >> endRoute;
 
-        do {
-            if (refresh) {  // Redibuja las opciones del menú si es necesario
-                Console::ForegroundColor = ConsoleColor::White;
+		BusList<Bus> buses;
 
-                // Opciones del menú de recarga de saldo
-                Console::SetCursorPosition(42, 12);
-                cout << (option == 1 ? "> Usar tarjeta existente <" : "  Usar tarjeta existente  ");
-                Console::SetCursorPosition(42, 14);
-                cout << (option == 2 ? "> Agregar nueva tarjeta <" : "  Agregar nueva tarjeta  ");
-                Console::SetCursorPosition(42, 16);
-                cout << (option == 3 ? "> Volver <" : "  Volver  ");
-            }
+		GenerateRandomBuses(buses, startRoute, endRoute);
 
-            tecla = _getch();  // Captura la tecla presionada
-            switch (tecla) {
-            case ARRIBA:
-                option--;
-                if (option < 1) option = 3;
-                refresh = true;
-                break;
-            case ABAJO:
-                option++;
-                if (option > 3) option = 1;
-                refresh = true;
-                break;
-            default:
-                refresh = false;
-                break;
-            }
-        } while (tecla != 13);  // Se sale del bucle cuando se presiona Enter
+		Bus* bus = buses.displayBuses();  // Cambiar a Bus*
+		menu->Fondo();
+		menu->Logo();
+		Console::ForegroundColor = ConsoleColor::White;
+		if (bus != nullptr) {
 
-        // Limpia la pantalla antes de pedir los datos para la opción seleccionada
-        for (int i = 12; i <= 16; i++) {  // Borra las opciones anteriores
-            Console::SetCursorPosition(42, i);
-            cout << string(40, ' ');  // Limpia la línea
-        }
+			if (bus) {
+				if (client->GetBalance() >= bus->GetPrice()) {
+					client->SetBalance(client->GetBalance() - bus->GetPrice());
+					client->AddBusData(bus->GetBusNumber(), bus->GetCompany(), bus->GetPrice(), bus->GetSchedule());
+					client->AddBusRoute(bus->GetBusNumber(), startRoute, endRoute);
+					database->saveClientsToFile();
+					Console::SetCursorPosition(42, 22);
+					cout << "Boleto comprado con exito.";
+				}
+				else {
+					Console::SetCursorPosition(42, 22);
+					cout << "Saldo insuficiente.";
+				}
+			}
+			else {
+				Console::SetCursorPosition(42, 22);
+				cout << "Bus no encontrado.";
+			}
+		}
+		else {
+			Console::SetCursorPosition(42, 22);
+			cout << "No se mostraron buses disponibles.";
+		}
+	}
 
-        // Recolocar el cursor y manejar las opciones seleccionadas
-        Console::SetCursorPosition(42, 12);
 
-        if (option == 1) {
-            // Usar tarjeta existente
-            if (client->creditData.empty()) {
-                Console::SetCursorPosition(42, 12);
-                cout << "No tiene tarjetas registradas.\n";
-            }
-            else {
-                int cvv;
-                Console::SetCursorPosition(42, 12);
-                cout << "Ingrese el CVV de su tarjeta: ";
-                cin >> cvv;
+	void GenerateRandomBuses(BusList<Bus>& buses, string startRoute, string endRoute) {
+		srand(time(0));
+		int numBuses = rand() % 7 + 10;  // Genera entre 4 y 6 buses
+		for (int i = 0; i < numBuses; i++) {
+			int busNumber = rand() % 100 + 1;
+			string company = GenerateRandomCompany();
+			int price = rand() % 31 + 30;  // Precio entre 30 y 60
+			string schedule = to_string(rand() % 24) + ":00";
+			Bus bus(busNumber, company, price, schedule);
+			bus.SetStartRoute(startRoute);
+			bus.SetEndRoute(endRoute);
+			buses.addBus(bus);
+			buses.sort();
+		}
+	}
 
-                bool cardFound = false;
-                for (CreditCard* card : client->creditData) {
-                    if (card->GetCVV() == cvv) {
-                        Console::SetCursorPosition(42, 14);
-                        card->ToString();
-                        int amount;
-                        Console::SetCursorPosition(42, 20);
-                        cout << "Seleccione monto de recarga (40, 60, 80): ";
-                        cin >> amount;
+	string GenerateRandomCompany() {
+		ifstream file("Empresas.txt");
+		vector<string> companies;
+		string company;
+		while (getline(file, company)) {
+			companies.push_back(company);
+		}
+		file.close();
+		return companies[rand() % companies.size()];
+	}
 
-                        if (amount == 40 || amount == 60 || amount == 80) {
-                            client->SetBalance(client->GetBalance() + amount);
-                            database->saveClientsToFile();
-                            Console::SetCursorPosition(42, 22);
-                            cout << "Recarga exitosa.\n";
-                        }
-                        else {
-                            Console::SetCursorPosition(42, 22);
-                            cout << "Monto no válido.\n";
-                        }
-                        cardFound = true;
-                        break;
-                    }
-                }
-                if (!cardFound) {
-                    Console::SetCursorPosition(42, 18);
-                    cout << "Tarjeta no encontrada.\n";
-                }
-            }
-        }
-        else if (option == 2) {
-            // Agregar nueva tarjeta
-            string type;
-            long long number;
-            int date, cvv;
-            Console::SetCursorPosition(42, 12);
-            cout << "Ingrese tipo de tarjeta (VISA/MASTERCARD): ";
-            cin >> type;
-            Console::SetCursorPosition(42, 14);
-            cout << "Ingrese numero de tarjeta: ";
-            cin >> number;
-            Console::SetCursorPosition(42, 16);
-            cout << "Ingrese fecha de vencimiento (mm/aa): ";
-            cin >> date;
-            Console::SetCursorPosition(42, 18);
-            cout << "Ingrese CVV: ";
-            cin >> cvv;
+	void ShowBoughtTickets(Client<int>* client) {
+		if (client->busdata.empty()) {
+			menu->Fondo();  // Llama a Fondo solo una vez
+			menu->Logo();   // Llama a Logo solo una vez
+			Console::ForegroundColor = ConsoleColor::White;
+			Console::SetCursorPosition(42, 12);
+			cout << "No han comprado boletos";
+			_getch();
+		}
+		else {
+			for (Bus* bus : client->busdata) {
+				bus->ToStringData();
+				_getch();
 
-            if (number > 0 && cvv > 0) {
-                try {
-                    client->AddCreditCard(type, number, date, cvv);
-                    int amount;
-                    Console::SetCursorPosition(42, 20);
-                    cout << "Seleccione monto de recarga (40, 60, 80): ";
-                    cin >> amount;
+			}
+		}
+	}
 
-                    if (amount == 40 || amount == 60 || amount == 80) {
-                        client->SetBalance(client->GetBalance() + amount);
-                        database->saveClientsToFile();  // Guardar cambios
-                        Console::SetCursorPosition(42, 22);
-                        cout << "Recarga exitosa.\n";
-                    }
-                    else {
-                        Console::SetCursorPosition(42, 22);
-                        cout << "Monto no valido.\n";
-                    }
-                }
-                catch (exception& e) {
-                    Console::SetCursorPosition(42, 22);
-                    cout << "Error al agregar tarjeta o recargar: " << e.what() << endl;
-                }
-            }
-            else {
-                Console::SetCursorPosition(42, 22);
-                cout << "Datos de la tarjeta no validos.\n";
-            }
-        }
-        else if (option == 3) {
-            // Volver al menú anterior
-            ClientMenu(client);
-        }
-    }
+	void ShowBalance(Client<int>* client) {
+		menu->Fondo();  // Llama a Fondo solo una vez
+		menu->Logo();   // Llama a Logo solo una vez
+		Console::ForegroundColor = ConsoleColor::White;
+		Console::SetCursorPosition(42, 12);
+		cout << "Su saldo actual es: " << client->GetBalance() << " soles.\n";
+	}
+	void RechargeBalance(Client<int>* client) {
+		int option = 1;
+		char tecla;
+		bool refresh = true;
+
+		// Mostrar fondo y logo una sola vez
+		menu->Fondo();
+		menu->Logo();
+
+		do {
+			if (refresh) {  // Redibuja las opciones del menú si es necesario
+				Console::ForegroundColor = ConsoleColor::White;
+
+				// Opciones del menú de recarga de saldo
+				Console::SetCursorPosition(42, 12);
+				cout << (option == 1 ? "> Usar tarjeta existente <" : "  Usar tarjeta existente  ");
+				Console::SetCursorPosition(42, 14);
+				cout << (option == 2 ? "> Agregar nueva tarjeta <" : "  Agregar nueva tarjeta  ");
+				Console::SetCursorPosition(42, 16);
+				cout << (option == 3 ? "> Volver <" : "  Volver  ");
+			}
+
+			tecla = _getch();  // Captura la tecla presionada
+			switch (tecla) {
+			case ARRIBA:
+				option--;
+				if (option < 1) option = 3;
+				refresh = true;
+				break;
+			case ABAJO:
+				option++;
+				if (option > 3) option = 1;
+				refresh = true;
+				break;
+			default:
+				refresh = false;
+				break;
+			}
+		} while (tecla != 13);  // Se sale del bucle cuando se presiona Enter
+
+		// Limpia la pantalla antes de pedir los datos para la opción seleccionada
+		for (int i = 12; i <= 16; i++) {  // Borra las opciones anteriores
+			Console::SetCursorPosition(42, i);
+			cout << string(40, ' ');  // Limpia la línea
+		}
+
+		// Recolocar el cursor y manejar las opciones seleccionadas
+		Console::SetCursorPosition(42, 12);
+
+		if (option == 1) {
+			// Usar tarjeta existente
+			if (client->creditData.empty()) {
+				Console::SetCursorPosition(42, 12);
+				cout << "No tiene tarjetas registradas.\n";
+			}
+			else {
+				int cvv;
+				Console::SetCursorPosition(42, 12);
+				cout << "Ingrese el CVV de su tarjeta: ";
+				cin >> cvv;
+
+				bool cardFound = false;
+				for (CreditCard* card : client->creditData) {
+					if (card->GetCVV() == cvv) {
+						Console::SetCursorPosition(42, 14);
+						card->ToString();
+						int amount;
+						Console::SetCursorPosition(42, 20);
+						cout << "Seleccione monto de recarga (40, 60, 80): ";
+						cin >> amount;
+
+						if (amount == 40 || amount == 60 || amount == 80) {
+							client->SetBalance(client->GetBalance() + amount);
+							database->saveClientsToFile();
+							Console::SetCursorPosition(42, 22);
+							cout << "Recarga exitosa.\n";
+						}
+						else {
+							Console::SetCursorPosition(42, 22);
+							cout << "Monto no válido.\n";
+						}
+						cardFound = true;
+						break;
+					}
+				}
+				if (!cardFound) {
+					Console::SetCursorPosition(42, 18);
+					cout << "Tarjeta no encontrada.\n";
+				}
+			}
+		}
+		else if (option == 2) {
+			// Agregar nueva tarjeta
+			string type;
+			long long number;
+			int date, cvv;
+			Console::SetCursorPosition(42, 12);
+			cout << "Ingrese tipo de tarjeta (VISA/MASTERCARD): ";
+			cin >> type;
+			Console::SetCursorPosition(42, 14);
+			cout << "Ingrese numero de tarjeta: ";
+			cin >> number;
+			Console::SetCursorPosition(42, 16);
+			cout << "Ingrese fecha de vencimiento (mm/aa): ";
+			cin >> date;
+			Console::SetCursorPosition(42, 18);
+			cout << "Ingrese CVV: ";
+			cin >> cvv;
+
+			if (number > 0 && cvv > 0) {
+				try {
+					client->AddCreditCard(type, number, date, cvv);
+					int amount;
+					Console::SetCursorPosition(42, 20);
+					cout << "Seleccione monto de recarga (40, 60, 80): ";
+					cin >> amount;
+
+					if (amount == 40 || amount == 60 || amount == 80) {
+						client->SetBalance(client->GetBalance() + amount);
+						database->saveClientsToFile();  // Guardar cambios
+						Console::SetCursorPosition(42, 22);
+						cout << "Recarga exitosa.\n";
+					}
+					else {
+						Console::SetCursorPosition(42, 22);
+						cout << "Monto no valido.\n";
+					}
+				}
+				catch (exception& e) {
+					Console::SetCursorPosition(42, 22);
+					cout << "Error al agregar tarjeta o recargar: " << e.what() << endl;
+				}
+			}
+			else {
+				Console::SetCursorPosition(42, 22);
+				cout << "Datos de la tarjeta no validos.\n";
+			}
+		}
+		else if (option == 3) {
+			// Volver al menú anterior
+			ClientMenu(client);
+		}
+	}
 
 
 
