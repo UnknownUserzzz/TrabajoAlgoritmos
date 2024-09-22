@@ -114,7 +114,7 @@ public:
             ptr1 = head;
 
             while (ptr1->next != lptr) {
-                // Comparar dos nodos de tipo T4689484468468
+                // Comparar dos nodos de tipo T
                 if (!(ptr1->data < ptr1->next->data)) {
                     std::swap(ptr1->data, ptr1->next->data); // Intercambiar los datos si están en el orden incorrecto
                     swapped = true;
