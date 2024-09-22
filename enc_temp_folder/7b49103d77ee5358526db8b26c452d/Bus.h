@@ -26,7 +26,7 @@ public:
     }
     //Para comparar y ordenar los autobuses
     bool operator<(const Bus& other) const {
-        return this->price < other.price; // Se puede cambiar el atributo price por busNumber para comparar el numero de bus
+        return this->price < other.price; // Comparación basada en el número de autobús
     }
 
     // Getters y Setters
