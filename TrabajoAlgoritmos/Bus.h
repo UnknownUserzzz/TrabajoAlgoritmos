@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#pragma once
 #include <sstream>
 #include"Menu.h"
 using namespace std;

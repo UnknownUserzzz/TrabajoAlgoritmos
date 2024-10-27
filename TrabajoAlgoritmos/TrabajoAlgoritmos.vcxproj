@@ -111,6 +111,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BST.hpp" />
     <ClInclude Include="BubbleSort.h" />
     <ClInclude Include="Bus.h" />
     <ClInclude Include="BusList.h" />

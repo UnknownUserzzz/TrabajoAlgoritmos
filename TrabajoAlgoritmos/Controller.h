@@ -4,12 +4,14 @@
 #include <cstdlib>
 #include <ctime>
 #include "ClientDatabase.h"
-#include "BusList.h"
+/*#include "BusList.h"*/
 #include"Menu.h"
+#include "BST.hpp"
 #define ARRIBA 72
 #define ABAJO 80
 #define DERECHA 77
 #define IZQUIERDA 75
+
 class Controller {
 private:
 	ClientDatabase<int>* database;
@@ -213,12 +215,15 @@ public:
 
 
 
-
 	void BuyTicket(Client<int>* client) {
 		string startRoute, endRoute;
+
+		// Configuración inicial del menú
 		menu->Fondo();
 		menu->Logo();
 		Console::ForegroundColor = ConsoleColor::White;
+
+		// Entrada de la ruta inicial y final
 		Console::SetCursorPosition(42, 12);
 		cout << "Ingrese la ruta inicial: ";
 		cin >> startRoute;
@@ -226,57 +231,93 @@ public:
 		cout << "Ingrese la ruta final: ";
 		cin >> endRoute;
 
-		BusList<Bus> buses;
+		// Creación del BST para buses
+		BST<Bus> buses([](Bus bus) { });
 
+		// Generar buses aleatorios usando las rutas proporcionadas
 		GenerateRandomBuses(buses, startRoute, endRoute);
 
-		Bus* bus = buses.displayBuses();  // Cambiar a Bus*
-		menu->Fondo();
-		menu->Logo();
-		Console::ForegroundColor = ConsoleColor::White;
-		if (bus != nullptr) {
+		// Vector temporal para almacenar punteros a los buses en orden
+		vector<Bus*> busList;
+		buses.collectInOrder(busList); // Método para recolectar los buses en orden en el vector
 
-			if (bus) {
-				if (client->GetBalance() >= bus->GetPrice()) {
-					client->SetBalance(client->GetBalance() - bus->GetPrice());
-					client->AddBusData(bus->GetBusNumber(), bus->GetCompany(), bus->GetPrice(), bus->GetSchedule());
-					client->AddBusRoute(bus->GetBusNumber(), startRoute, endRoute);
-					database->saveClientsToFile();
-					Console::SetCursorPosition(42, 22);
-					cout << "Boleto comprado con exito.";
-				}
-				else {
-					Console::SetCursorPosition(42, 22);
-					cout << "Saldo insuficiente.";
-				}
+		// Iterar sobre los buses uno a uno
+		int index = 0;
+		bool busSelected = false;
+		Bus* selectedBus = nullptr;
+
+		while (index < busList.size() && !busSelected) {
+			system("cls"); // Limpiar la pantalla (en Windows)
+
+			// Mostrar la información del bus actual
+			cout << "Bus " << (index + 1) << " de " << busList.size() << ":" << endl;
+			busList[index]->ToString();
+			cout << endl;
+
+			// Esperar la acción del usuario
+			tecla = _getch();
+
+			// Si se presiona ESC, selecciona el bus actual
+			if (tecla == 27) { // Código ASCII para ESC
+				selectedBus = busList[index];
+				busSelected = true;
+			}
+
+			// Avanzar al siguiente bus si se presiona Enter
+			if (tecla == 13) { // Código ASCII para Enter
+				index++;
+			}
+		}
+
+		// Verificar si se seleccionó un bus
+		if (selectedBus != nullptr) {
+			menu->Fondo();
+			menu->Logo();
+			Console::ForegroundColor = ConsoleColor::White;
+
+			// Validar si el cliente tiene suficiente saldo para comprar el boleto
+			if (client->GetBalance() >= selectedBus->GetPrice()) {
+				client->SetBalance(client->GetBalance() - selectedBus->GetPrice());
+				client->AddBusData(selectedBus->GetBusNumber(), selectedBus->GetCompany(), selectedBus->GetPrice(), selectedBus->GetSchedule());
+				client->AddBusRoute(selectedBus->GetBusNumber(), startRoute, endRoute);
+				database->saveClientsToFile();
+				Console::SetCursorPosition(42, 22);
+				cout << "Boleto comprado con éxito.";
 			}
 			else {
 				Console::SetCursorPosition(42, 22);
-				cout << "Bus no encontrado.";
+				cout << "Saldo insuficiente.";
 			}
 		}
 		else {
 			Console::SetCursorPosition(42, 22);
-			cout << "No se mostraron buses disponibles.";
+			cout << "No se seleccionó ningún bus.";
 		}
 	}
 
 
-	void GenerateRandomBuses(BusList<Bus>& buses, string startRoute, string endRoute) {
+	void GenerateRandomBuses(BST<Bus>& buses, string startRoute, string endRoute) {
 		srand(time(0));
-		int numBuses = rand() % 7 + 10;  // Genera entre 4 y 6 buses
+		int numBuses = rand() % 7 + 10; // Genera entre 10 y 16 buses
 		for (int i = 0; i < numBuses; i++) {
 			int busNumber = rand() % 100 + 1;
 			string company = GenerateRandomCompany();
-			int price = rand() % 31 + 30;  // Precio entre 30 y 60
+			int price = rand() % 31 + 30; // Precio entre 30 y 60
 			string schedule = to_string(rand() % 24) + ":00";
+
+			// Crear un nuevo bus con los datos generados
 			Bus bus(busNumber, company, price, schedule);
 			bus.SetStartRoute(startRoute);
 			bus.SetEndRoute(endRoute);
-			buses.addBus(bus);
-			buses.sort();
+
+			// Insertar el bus en el BST
+			buses.insertar(bus);
 		}
+
+		// Mostrar los buses ordenados por precio
+		buses.enOrden();
 	}
+
 
 	string GenerateRandomCompany() {
 		ifstream file("Empresas.txt");
