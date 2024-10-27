@@ -1,10 +1,11 @@
 #pragma once
 #include <iostream>
-#pragma once
 #include <sstream>
+#include <vector>
 #include"Menu.h"
+#include "Seat.hpp"
+
 using namespace std;
-//hola
 class Bus {
 private:
     int busNumber;
@@ -14,16 +15,16 @@ private:
     string StartRoute;
     string EndRoute;
     Menu* menu;
+    vector<Seat> seats; // Lista de asientos en el bus
+    int totalSeats; // Número total de asientos en el bus
 
 public:
-    Bus(int busNumber=0, string Company="", int price =0, string schedule="") {
-        this->busNumber = busNumber;
-        this->Company = Company;
-        this->price = price;
-        this->schedule = schedule;
-        StartRoute = "";
-        EndRoute = "";
-        menu = new Menu();
+    Bus(int number, const std::string& comp, int pr, const std::string& sched, int seatCount = 20)
+        : busNumber(number), Company(comp), price(pr), schedule(sched), totalSeats(seatCount) {
+        // Inicializa los asientos
+        for (int i = 1; i <= totalSeats; ++i) {
+            seats.emplace_back(Seat(i));
+        }
     }
     //Para comparar y ordenar los autobuses
     bool operator<(const Bus& other) const {
@@ -80,5 +81,21 @@ public:
         Console::SetCursorPosition(42, 20);
         cout << "Horario: " << schedule;
        
+    }
+    // Muestra los asientos
+    void displaySeats() const {
+        for (const auto& seat : seats) {
+            seat.displaySeat();
+            std::cout << " "; // Espacio entre asientos
+        }
+        std::cout << "\n";
+    }
+
+    // Selecciona un asiento
+    bool selectSeat(int seatNumber) {
+        if (seatNumber < 1 || seatNumber > totalSeats) return false;
+        if (seats[seatNumber - 1].isOccupied()) return false;
+        seats[seatNumber - 1].setOccupied(true);
+        return true;
     }
 };
