@@ -232,7 +232,7 @@ public:
 		cin >> endRoute;
 
 		// Creación del BST para buses
-		BST<Bus> buses([](Bus bus) { });
+		BST<Bus> buses([](Bus bus) {}); // No imprimimos nada durante la creación
 
 		// Generar buses aleatorios usando las rutas proporcionadas
 		GenerateRandomBuses(buses, startRoute, endRoute);
@@ -254,7 +254,13 @@ public:
 			busList[index]->ToString();
 			cout << endl;
 
+			// Mostrar los asientos del bus
+			cout << "Asientos disponibles:" << endl;
+			busList[index]->displaySeats();
+			cout << endl;
+
 			// Esperar la acción del usuario
+			cout << "Presione Enter para ver el siguiente bus, ESC para seleccionar este bus, o S para seleccionar un asiento." << endl;
 			tecla = _getch();
 
 			// Si se presiona ESC, selecciona el bus actual
@@ -266,6 +272,22 @@ public:
 			// Avanzar al siguiente bus si se presiona Enter
 			if (tecla == 13) { // Código ASCII para Enter
 				index++;
+			}
+
+			// Selección de asiento si se presiona 'S'
+			if (tecla == 'S' || tecla == 's') {
+				int seatNumber;
+				cout << "Ingrese el número del asiento que desea seleccionar: ";
+				cin >> seatNumber;
+
+				if (busList[index]->selectSeat(seatNumber)) {
+					cout << "Asiento " << seatNumber << " seleccionado correctamente." << endl;
+				}
+				else {
+					cout << "Asiento no disponible o número inválido." << endl;
+				}
+
+				system("pause"); // Esperar a que el usuario presione una tecla
 			}
 		}
 

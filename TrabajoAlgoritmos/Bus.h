@@ -1,10 +1,11 @@
 #pragma once
 #include <iostream>
-#pragma once
 #include <sstream>
+#include <vector>
 #include"Menu.h"
+#include "Seat.hpp"
+
 using namespace std;
-//hola
 class Bus {
 private:
     int busNumber;
@@ -14,36 +15,40 @@ private:
     string StartRoute;
     string EndRoute;
     Menu* menu;
+    vector<Seat> seats; // Lista de asientos en el bus
+    int totalSeats; // Número total de asientos en el bus
 
 public:
-    Bus(int busNumber=0, string Company="", int price =0, string schedule="") {
-        this->busNumber = busNumber;
-        this->Company = Company;
-        this->price = price;
-        this->schedule = schedule;
-        StartRoute = "";
-        EndRoute = "";
-        menu = new Menu();
+    Bus(int number, const std::string& comp, int pr, const std::string& sched, int seatCount = 20)
+        : busNumber(number), Company(comp), price(pr), schedule(sched), totalSeats(seatCount) {
+        // Inicializa los asientos
+        srand(static_cast<unsigned>(time(0))); // Semilla para números aleatorios
+        for (int i = 1; i <= totalSeats; ++i) {
+            seats.emplace_back(Seat(i));
+        }
+
+        // Ocupa algunos asientos aleatoriamente
+        int numOccupied = rand() % (totalSeats / 2); // Ocupa hasta la mitad de los asientos
+        for (int i = 0; i < numOccupied; ++i) {
+            int randomSeat = rand() % totalSeats;
+            seats[randomSeat].setOccupied(true);
+        }
     }
     //Para comparar y ordenar los autobuses
     bool operator<(const Bus& other) const {
         return this->price < other.price; // Se puede cambiar el atributo price por busNumber para comparar el numero de bus
     }
 
-    // Getters y Setters
-    int GetBusNumber() { return busNumber; }
-    string GetCompany() { return Company; }
-    int GetPrice() { return price; }
-    string GetSchedule() { return schedule; }
-    string GetStartRoute() { return StartRoute; }
-    string GetEndRoute() { return EndRoute; }
 
-    void SetBusNumber(int busNumber) { this->busNumber = busNumber; }
-    void SetCompany(string Company) { this->Company = Company; }
-    void SetPrice(int price) { this->price = price; }
-    void SetSchedule(string schedule) { this->schedule = schedule; }
-    void SetStartRoute(string StartRoute) { this->StartRoute = StartRoute; }
-    void SetEndRoute(string EndRoute) { this->EndRoute = EndRoute; }
+    // Getters y setters
+    int GetBusNumber() const { return busNumber; }
+    std::string GetCompany() const { return Company; }
+    int GetPrice() const { return price; }
+    std::string GetSchedule() const { return schedule; }
+    std::string GetStartRoute() const { return StartRoute; }
+    std::string GetEndRoute() const { return EndRoute; }
+    void SetStartRoute(const std::string& route) { StartRoute = route; }
+    void SetEndRoute(const std::string& route) { EndRoute = route; }
 
     // Mostrar información del autobús
     void ToString() {
@@ -80,5 +85,32 @@ public:
         Console::SetCursorPosition(42, 20);
         cout << "Horario: " << schedule;
        
+    }
+
+    // Muestra los asientos
+    void displaySeats() const {
+        for (const auto& seat : seats) {
+            seat.displaySeat();
+            std::cout << " "; // Espacio entre asientos
+        }
+        std::cout << "\n";
+    }
+
+    // Selecciona un asiento
+    bool selectSeat(int seatNumber) {
+        if (seatNumber < 1 || seatNumber > totalSeats) return false;
+        if (seats[seatNumber - 1].isOccupied()) return false;
+        seats[seatNumber - 1].setOccupied(true);
+        return true;
+    }
+
+    // Encuentra el primer asiento disponible
+    int findFirstAvailableSeat() const {
+        for (const auto& seat : seats) {
+            if (!seat.isOccupied()) {
+                return seat.getSeatNumber();
+            }
+        }
+        return -1; // No hay asientos disponibles
     }
 };

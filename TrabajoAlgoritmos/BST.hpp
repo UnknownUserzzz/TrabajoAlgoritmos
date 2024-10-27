@@ -12,6 +12,8 @@ public:
     T elemento;
     Nodo* izq;
     Nodo* der;
+    Nodo(const T& elem) : elemento(elem), izq(nullptr), der(nullptr) {}
+	Nodo() : izq(nullptr), der(nullptr) {}
 };
 
 // Clase BST para manejar objetos Bus
@@ -68,9 +70,7 @@ private:
     // Función recursiva para insertar un elemento en el árbol
     bool _insertar(Nodo<T>*& nodo, T e) {
         if (nodo == nullptr) {
-            nodo = new Nodo<T>();
-            nodo->elemento = e;
-            nodo->izq = nodo->der = nullptr;
+            nodo = new Nodo<T>(e); // Usar el constructor que inicializa 'elemento'
             return true;
         }
         int r = Comparar(nodo->elemento, e);
