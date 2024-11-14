@@ -4,9 +4,11 @@
 #include <cstdlib>
 #include <ctime>
 #include "ClientDatabase.h"
+#include <unordered_set>
+#include <set>
 /*#include "BusList.h"*/
 #include"Menu.h"
-#include "BST.hpp"
+#include "Ordenador.h"
 #define ARRIBA 72
 #define ABAJO 80
 #define DERECHA 77
@@ -19,12 +21,15 @@ private:
 	int option;
 	int _option;
 	char tecla;
+	vector<Bus> allBuses;
 public:
 	Controller() {
 		database = new ClientDatabase<int>();
 		menu = new Menu();
 		option = 1;
 		_option = 1;
+		GenerateRandomBuses(allBuses);
+
 	}
 	void MainMenu() {
 		bool refresh = true;
@@ -33,13 +38,11 @@ public:
 		menu->Welcome();
 
 		do {
-			if (refresh) {  // Solo redibuja las opciones si es necesario
-
+			if (refresh) {
 				Console::ForegroundColor = ConsoleColor::White;
 				Console::CursorVisible = false;
 
-				// Actualiza las opciones del menú
-				Console::SetCursorPosition(50, 14);  // Ajusta la posición en lugar de mover constantemente
+				Console::SetCursorPosition(50, 14);
 				cout << (option == 1 ? "   > REGISTRARSE <   " : "     REGISTRARSE     ");
 				Console::SetCursorPosition(50, 16);
 				cout << (option == 2 ? "  > INICIAR SESION < " : "    INICIAR SESION   ");
@@ -47,12 +50,12 @@ public:
 				cout << (option == 3 ? "      > SALIR <       " : "        SALIR        ");
 			}
 
-			tecla = _getch();  // Solo cambiar la opción si es necesario
+			tecla = _getch();
 			switch (tecla) {
 			case ARRIBA:
 				option--;
 				if (option < 1) option = 3;
-				refresh = true;  // Cambiar el valor para refrescar solo si cambia la opción
+				refresh = true;
 				break;
 			case ABAJO:
 				option++;
@@ -60,12 +63,11 @@ public:
 				refresh = true;
 				break;
 			default:
-				refresh = false;  // No refrescar si no hubo cambio
+				refresh = false;
 				break;
 			}
 		} while (tecla != 13);
 
-		// Manejo de selección
 		switch (option) {
 		case 1:
 			RegisterClient();
@@ -78,6 +80,121 @@ public:
 		case 3:
 			exit(0);
 		}
+	}
+
+	// Menú de administrador
+	void AdminMenu() {
+		int adminOption = 1;
+		bool refresh = true;
+		menu->Fondo();
+		menu->Logo();
+
+		do {
+			if (refresh) {
+				Console::ForegroundColor = ConsoleColor::White;
+				Console::SetCursorPosition(42, 12);
+				cout << (adminOption == 1 ? "> Listar Buses <" : "  Listar Buses  ");
+				Console::SetCursorPosition(42, 14);
+				cout << (adminOption == 2 ? "> Listar Clientes <" : "  Listar Clientes  ");
+				Console::SetCursorPosition(42, 16);
+				cout << (adminOption == 3 ? "> Salir <" : "  Salir  ");
+			}
+
+			tecla = _getch();
+			switch (tecla) {
+			case ARRIBA:
+				adminOption--;
+				if (adminOption < 1) adminOption = 3;
+				refresh = true;
+				break;
+			case ABAJO:
+				adminOption++;
+				if (adminOption > 3) adminOption = 1;
+				refresh = true;
+				break;
+			default:
+				refresh = false;
+				break;
+			}
+		} while (tecla != 13);
+
+		switch (adminOption) {
+		case 1:
+			ListBuses();
+			AdminMenu();
+			break;
+		case 2:
+			ListClients();
+			AdminMenu();
+			break;
+		case 3:
+			return;
+		}
+	}
+
+	set<std::pair<std::string, std::string>> GetAvailableRoutes() {
+		std::set<std::pair<std::string, std::string>> routes;
+		for (const auto& bus : allBuses) { // allBuses contiene todos los buses generados
+			routes.emplace(bus.GetStartRoute(), bus.GetEndRoute());
+		}
+		return routes;
+	}
+
+	void ListBuses() {
+		menu->Fondo();
+		menu->Logo();
+		Console::ForegroundColor = ConsoleColor::White;
+
+		std::vector<Bus> busList; // Cambia a std::vector<Bus>
+		GenerateRandomBuses(busList); // Llama a GenerateRandomBuses con un vector de buses
+
+		Console::SetCursorPosition(42, 10);
+		cout << "Lista de Buses:";
+
+		for (size_t i = 0; i < busList.size(); ++i) {
+			Console::SetCursorPosition(42, 12 + static_cast<int>(i) * 2);
+			cout << "Nombre del Bus: " << busList[i].GetBusNumber()
+				<< ", Precio: " << busList[i].GetPrice();
+		}
+
+		_getch();
+	}
+
+	// Listar clientes
+	void ListClients() {
+		menu->Fondo();
+		menu->Logo();
+		Console::ForegroundColor = ConsoleColor::White;
+
+		// Obtener todos los clientes de la base de datos
+		auto clients = database->getAllClients(); // Método getAllClients implementado en ClientDatabase
+
+		Console::SetCursorPosition(42, 10);
+		cout << "Lista de Clientes:";
+
+		for (size_t i = 0; i < clients.size(); ++i) {
+			Console::SetCursorPosition(42, 12 + static_cast<int>(i) * 2);
+			cout << i + 1 << ". " << clients[i]->GetUser(); // Mostramos el nombre del cliente
+		}
+
+		int clientIndex;
+		Console::SetCursorPosition(42, 14 + static_cast<int>(clients.size()) * 2);
+		cout << "Seleccione el número de cliente para ver detalles (0 para salir): ";
+		cin >> clientIndex;
+
+		if (clientIndex > 0 && clientIndex <= static_cast<int>(clients.size())) {
+			Client<int>* selectedClient = clients[clientIndex - 1];
+			ShowClientDetails(selectedClient);
+		}
+	}
+	// Mostrar detalles del cliente
+	void ShowClientDetails(Client<int>* client) {
+		menu->Fondo();
+		menu->Logo();
+		Console::ForegroundColor = ConsoleColor::White;
+		Console::SetCursorPosition(42, 12);
+		client->ToString();
+		_getch();
 	}
 
 	void ClientMenu(Client<int>* client) {
@@ -202,102 +319,151 @@ public:
 		cout << "Ingrese password: ";
 		cin >> password;
 
-		Client<int>* client = database->findClient(user, password);
-		if (client) {
-			ClientMenu(client);
+		if (user == "admin" && password == "admin") {
+			AdminMenu();  // Mostrar menú de administración
 		}
 		else {
-			Console::SetCursorPosition(42, 16);
-			cout << "Usuario no encontrado";
-			_getch();
+			Client<int>* client = database->findClient(user, password);
+			if (client) {
+				ClientMenu(client);
+			}
+			else {
+				Console::SetCursorPosition(42, 16);
+				cout << "Usuario no encontrado";
+				_getch();
+			}
+		}
+	}
+	void LimpiarArea(int x1, int y1, int x2, int y2) {
+		// Borra un área específica de la pantalla, de (x1, y1) a (x2, y2)
+		for (int y = y1; y <= y2; y++) {
+			for (int x = x1; x <= x2; x++) {
+				Console::SetCursorPosition(x, y);
+				cout << " "; // Borra el contenido en la posición actual
+			}
 		}
 	}
 
+	void printWithinBounds(const std::string& text, int startX, int startY, int maxWidth, int maxLines) {
+		std::istringstream words(text);
+		std::string word;
+		int currentX = startX;
+		int currentY = startY;
+		int lineCount = 0;
 
+		while (words >> word) {
+			if (currentX + word.size() >= startX + maxWidth) {  // Cambiar de línea si se excede el ancho
+				currentY++;
+				lineCount++;
+				currentX = startX;
+				if (lineCount >= maxLines) break;  // No exceder el número máximo de líneas permitido
+			}
+			Console::SetCursorPosition(currentX, currentY);
+			cout << word << " ";
+			currentX += word.size() + 1;  // Espacio entre palabras
+		}
+	}
 
 	void BuyTicket(Client<int>* client) {
-		string startRoute, endRoute;
-
-		// Configuración inicial del menú
 		menu->Fondo();
 		menu->Logo();
-		Console::ForegroundColor = ConsoleColor::White;
 
-		// Entrada de la ruta inicial y final
-		Console::SetCursorPosition(42, 12);
-		cout << "Ingrese la ruta inicial: ";
-		cin >> startRoute;
-		Console::SetCursorPosition(42, 14);
-		cout << "Ingrese la ruta final: ";
-		cin >> endRoute;
+		auto availableRoutes = GetAvailableRoutes();
+		int index = 1;
+		Console::SetCursorPosition(42, 10);
+		cout << "Rutas disponibles:" << endl;
+		for (const auto& route : availableRoutes) {
+			Console::SetCursorPosition(42, 10 + index);
+			cout << index << ". " << route.first << " -> " << route.second;
+			index++;
+		}
 
-		// Creación del BST para buses
-		BST<Bus> buses([](Bus bus) {}); // No imprimimos nada durante la creación
+		int routeChoice;
+		Console::SetCursorPosition(42, 10 + index + 2);
+		cout << "Seleccione el número de la ruta que desea: ";
+		cin >> routeChoice;
 
-		// Generar buses aleatorios usando las rutas proporcionadas
-		GenerateRandomBuses(buses, startRoute, endRoute);
+		if (routeChoice < 1 || routeChoice > static_cast<int>(availableRoutes.size())) {
+			Console::SetCursorPosition(42, 10 + index + 4);
+			cout << "Selección no válida.";
+			_getch();
+			return;
+		}
 
-		// Vector temporal para almacenar punteros a los buses en orden
-		vector<Bus*> busList;
-		buses.collectInOrder(busList); // Método para recolectar los buses en orden en el vector
+		for (int y = 10; y <= 30; y++) {
+			Console::SetCursorPosition(42, y);
+			cout << string(60, ' ');
+		}
 
-		// Iterar sobre los buses uno a uno
-		int index = 0;
+		auto selectedRoute = std::next(availableRoutes.begin(), routeChoice - 1);
+		std::string startRoute = selectedRoute->first;
+		std::string endRoute = selectedRoute->second;
+
+		std::vector<Bus> busList = SearchBusesByRoute(startRoute, endRoute);
+
+		if (busList.empty()) {
+			Console::SetCursorPosition(42, 12);
+			cout << "No se encontraron buses para la ruta seleccionada.";
+			_getch();
+			return;
+		}
+
+		int busIndex = 0;
 		bool busSelected = false;
 		Bus* selectedBus = nullptr;
 
-		while (index < busList.size() && !busSelected) {
-			system("cls"); // Limpiar la pantalla (en Windows)
+		while (busIndex < busList.size() && !busSelected) {
+			for (int y = 10; y <= 20; y++) {
+				Console::SetCursorPosition(42, y);
+				cout << string(60, ' ');
+			}
 
-			// Mostrar la información del bus actual
-			cout << "Bus " << (index + 1) << " de " << busList.size() << ":" << endl;
-			busList[index]->ToString();
-			cout << endl;
+			Console::SetCursorPosition(42, 10);
+			cout << "Bus " << (busIndex + 1) << " de " << busList.size() << ":" << endl;
 
-			// Mostrar los asientos del bus
-			cout << "Asientos disponibles:" << endl;
-			busList[index]->displaySeats();
-			cout << endl;
+			// Usa printWithinBounds para imprimir detalles del bus dentro de los límites
+			std::string busDetails = busList[busIndex].ToString();
+			printWithinBounds(busDetails, 42, 12, 60, 6);  // Ajusta los parámetros según la interfaz
 
-			// Esperar la acción del usuario
+
+			Console::SetCursorPosition(42, 26);
 			cout << "Presione Enter para ver el siguiente bus, ESC para seleccionar este bus, o S para seleccionar un asiento." << endl;
 			tecla = _getch();
 
-			// Si se presiona ESC, selecciona el bus actual
 			if (tecla == 27) { // Código ASCII para ESC
-				selectedBus = busList[index];
+				selectedBus = &busList[busIndex];
 				busSelected = true;
 			}
 
-			// Avanzar al siguiente bus si se presiona Enter
 			if (tecla == 13) { // Código ASCII para Enter
-				index++;
+				busIndex++;
 			}
 
-			// Selección de asiento si se presiona 'S'
 			if (tecla == 'S' || tecla == 's') {
 				int seatNumber;
+				busList[busIndex].displaySeats(42, 18);  // Muestra los asientos dentro del margen
+				Console::SetCursorPosition(42, 28);
 				cout << "Ingrese el número del asiento que desea seleccionar: ";
 				cin >> seatNumber;
 
-				if (busList[index]->selectSeat(seatNumber)) {
+				if (busList[busIndex].selectSeat(seatNumber)) {
+					Console::SetCursorPosition(42, 30);
 					cout << "Asiento " << seatNumber << " seleccionado correctamente." << endl;
 				}
 				else {
+					Console::SetCursorPosition(42, 30);
 					cout << "Asiento no disponible o número inválido." << endl;
 				}
 
-				system("pause"); // Esperar a que el usuario presione una tecla
+				system("pause");
 			}
 		}
 
-		// Verificar si se seleccionó un bus
 		if (selectedBus != nullptr) {
 			menu->Fondo();
 			menu->Logo();
 			Console::ForegroundColor = ConsoleColor::White;
 
-			// Validar si el cliente tiene suficiente saldo para comprar el boleto
 			if (client->GetBalance() >= selectedBus->GetPrice()) {
 				client->SetBalance(client->GetBalance() - selectedBus->GetPrice());
 				client->AddBusData(selectedBus->GetBusNumber(), selectedBus->GetCompany(), selectedBus->GetPrice(), selectedBus->GetSchedule());
@@ -317,27 +483,56 @@ public:
 		}
 	}
 
+	void GenerateRandomBuses(std::vector<Bus>& buses) {
+		srand(static_cast<unsigned>(time(0)));
 
-	void GenerateRandomBuses(BST<Bus>& buses, string startRoute, string endRoute) {
-		srand(time(0));
+		std::vector<std::string> cities = {
+			"Lima", "Arequipa", "Cusco", "Trujillo", "Chiclayo",
+			"Piura", "Iquitos", "Tacna", "Puno", "Chimbote",
+			"Huancayo", "Ayacucho", "Juliaca", "Cajamarca", "Huaraz"
+		};
+
 		int numBuses = rand() % 7 + 10; // Genera entre 10 y 16 buses
-		for (int i = 0; i < numBuses; i++) {
-			int busNumber = rand() % 100 + 1;
-			string company = GenerateRandomCompany();
-			int price = rand() % 31 + 30; // Precio entre 30 y 60
-			string schedule = to_string(rand() % 24) + ":00";
+		std::unordered_set<int> uniqueBusNumbers;
 
-			// Crear un nuevo bus con los datos generados
+		for (int i = 0; i < numBuses; i++) {
+			int busNumber;
+			do {
+				busNumber = rand() % 100 + 1;
+			} while (uniqueBusNumbers.find(busNumber) != uniqueBusNumbers.end());
+
+			uniqueBusNumbers.insert(busNumber);
+
+			std::string company = GenerateRandomCompany();
+			int price = rand() % 31 + 30;
+			std::string schedule = to_string(rand() % 24) + ":00";
+			std::string startRoute = cities[rand() % cities.size()];
+			std::string endRoute;
+
+			do {
+				endRoute = cities[rand() % cities.size()];
+			} while (endRoute == startRoute);
+
+			// Crear el bus con la ruta generada
 			Bus bus(busNumber, company, price, schedule);
 			bus.SetStartRoute(startRoute);
 			bus.SetEndRoute(endRoute);
 
-			// Insertar el bus en el BST
-			buses.insertar(bus);
+			// Agregar el bus al vector de buses
+			buses.push_back(bus);
+		}
+	}
+
+	vector<Bus> SearchBusesByRoute(const std::string& startRoute, const std::string& endRoute) {
+		std::vector<Bus> matchingBuses;
+
+		for (const auto& bus : allBuses) {
+			if (bus.GetStartRoute() == startRoute && bus.GetEndRoute() == endRoute) {
+				matchingBuses.push_back(bus);
+			}
 		}
 
-		// Mostrar los buses ordenados por precio
-		buses.enOrden();
+		return matchingBuses;
 	}
 
 

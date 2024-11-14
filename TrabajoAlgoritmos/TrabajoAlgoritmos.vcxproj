@@ -122,10 +122,12 @@
     <ClInclude Include="InfoCustomer.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Node.h" />
+    <ClInclude Include="Ordenador.h" />
     <ClInclude Include="Seat.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BubbleSort.cpp" />
+    <ClCompile Include="Ordenador.cpp" />
     <ClCompile Include="Source.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

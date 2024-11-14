@@ -19,6 +19,13 @@ private:
     int totalSeats; // Número total de asientos en el bus
 
 public:
+    Bus()
+        : busNumber(0), Company("Unknown"), price(0), schedule("Unknown"), totalSeats(20) {
+        // Inicializa los asientos
+        for (int i = 1; i <= totalSeats; ++i) {
+            seats.emplace_back(Seat(i));
+        }
+    }
     Bus(int number, const std::string& comp, int pr, const std::string& sched, int seatCount = 20)
         : busNumber(number), Company(comp), price(pr), schedule(sched), totalSeats(seatCount) {
         // Inicializa los asientos
@@ -50,50 +57,53 @@ public:
     void SetStartRoute(const std::string& route) { StartRoute = route; }
     void SetEndRoute(const std::string& route) { EndRoute = route; }
 
-    // Mostrar información del autobús
-    void ToString() {
-        menu->Fondo();
-        menu->Logo();
-        Console::ForegroundColor = ConsoleColor::White;
-        Console::SetCursorPosition(42, 12);
-        cout << "Empresa: " << Company;
-        Console::SetCursorPosition(42, 14);
-        cout << "Numero de bus: " << busNumber;
-        Console::SetCursorPosition(42, 16);
-        cout << "Precio: " << price;
-        Console::SetCursorPosition(42, 18);
-        cout << "Horario: " << schedule;
-        Console::SetCursorPosition(42, 24);
-        Console::ForegroundColor = ConsoleColor::Red;
-        cout << "PRESIONA ENTER PARA SEGUIR BUSCANDO....";
-        Console::SetCursorPosition(42, 26);
-        cout << "PRESIONA ESC PARA ELEGIR EL BOLETO DE BUS...";
+    string ToString() const {
+        std::ostringstream oss;
+        oss << "Empresa: " << Company << "\n";
+        oss << "Numero de bus: " << busNumber << "\n";
+        oss << "Precio: " << price << "\n";
+        oss << "Horario: " << schedule << "\n";
+        return oss.str();
     }
 
-    void ToStringData() {
-        menu->Fondo();
-        menu->Logo();
-        Console::ForegroundColor = ConsoleColor::White;
-        Console::SetCursorPosition(42, 12);
-        cout << "Ruta: " << StartRoute << " - " << EndRoute;
-        Console::SetCursorPosition(42, 14);
-        cout << "Empresa: " << Company;
-        Console::SetCursorPosition(42, 16);
-        cout << "Numero de bus: " << busNumber;
-        Console::SetCursorPosition(42, 18);
-        cout << "Precio: " << price;
-        Console::SetCursorPosition(42, 20);
-        cout << "Horario: " << schedule;
-       
+    string ToStringData() const {
+        std::ostringstream oss;
+        oss << "Ruta: " << StartRoute << " - " << EndRoute << "\n";
+        oss << "Empresa: " << Company << "\n";
+        oss << "Numero de bus: " << busNumber << "\n";
+        oss << "Precio: " << price << "\n";
+        oss << "Horario: " << schedule << "\n";
+        return oss.str();
     }
 
-    // Muestra los asientos
-    void displaySeats() const {
-        for (const auto& seat : seats) {
-            seat.displaySeat();
-            std::cout << " "; // Espacio entre asientos
+    void displaySeats(int startX = 42, int startY = 14, int seatsPerRow = 10) const {
+        int currentX = startX;
+        int currentY = startY;
+
+        Console::ForegroundColor = ConsoleColor::White;
+
+        for (int i = 0; i < seats.size(); ++i) {
+            Console::SetCursorPosition(currentX, currentY);
+
+            if (seats[i].isOccupied()) {
+                Console::ForegroundColor = ConsoleColor::Red;  // Color para asiento ocupado
+                cout << "[X]";  // Símbolo para asiento ocupado
+            }
+            else {
+                Console::ForegroundColor = ConsoleColor::Green;  // Color para asiento disponible
+                cout << "[" << seats[i].getSeatNumber() << "]";  // Muestra el número del asiento si está disponible
+            }
+
+            currentX += 4;  // Mueve el cursor horizontalmente para el siguiente asiento
+
+            // Salta a la siguiente fila después de seatsPerRow asientos
+            if ((i + 1) % seatsPerRow == 0) {
+                currentX = startX;
+                currentY += 2;  // Baja el cursor para la siguiente fila de asientos
+            }
         }
-        std::cout << "\n";
+
+        Console::ForegroundColor = ConsoleColor::White;  // Restaurar el color original
     }
 
     // Selecciona un asiento
